@@ -22,12 +22,12 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.pitz.findmybus.CustomAdapter;
 import com.pitz.findmybus.R;
-import com.pitz.findmybus.StaticConstants;
-import com.pitz.findmybus.controller.BaseDao;
+import com.pitz.findmybus.adapter.CustomAdapter;
+import com.pitz.findmybus.dao.BaseDao;
 import com.pitz.findmybus.model.Route;
 import com.pitz.findmybus.model.RouteList;
+
 
 public class MainActivity extends Activity 
 {
@@ -99,8 +99,8 @@ public class MainActivity extends Activity
 		Route selectedRoute = (Route) list.getAdapter().getItem(position);
 		
 		Intent it = new Intent(getApplicationContext(), RouteDetailsActivity.class);
-		it.putExtra("routeName", selectedRoute.getLongName());
-		it.putExtra("routeId", selectedRoute.getId());
+		it.putExtra(Protocols.PARAM_ROUTE_NAME, selectedRoute.toString());
+		it.putExtra(Protocols.PARAM_ROUTE_ID, selectedRoute.getId());
 		
 		startActivity(it);
 	}

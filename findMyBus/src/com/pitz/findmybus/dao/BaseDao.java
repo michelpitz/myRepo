@@ -1,4 +1,4 @@
-package com.pitz.findmybus.controller;
+package com.pitz.findmybus.dao;
 
 import java.io.BufferedReader;
 import java.io.IOException;

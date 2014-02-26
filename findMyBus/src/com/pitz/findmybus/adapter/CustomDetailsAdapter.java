@@ -1,4 +1,4 @@
-package com.pitz.findmybus;
+package com.pitz.findmybus.adapter;
 
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
+
+import com.pitz.findmybus.R;
 
 public class CustomDetailsAdapter extends BaseExpandableListAdapter 
 {

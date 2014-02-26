@@ -14,17 +14,18 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.pitz.findmybus.CustomDetailsAdapter;
 import com.pitz.findmybus.R;
-import com.pitz.findmybus.StaticConstants;
-import com.pitz.findmybus.controller.BaseDao;
+import com.pitz.findmybus.adapter.CustomDetailsAdapter;
+import com.pitz.findmybus.dao.BaseDao;
 import com.pitz.findmybus.model.RouteDetailsList;
 import com.pitz.findmybus.model.RouteTimetable;
+
 
 public class RouteDetailsActivity extends Activity 
 {
@@ -37,15 +38,14 @@ public class RouteDetailsActivity extends Activity
 	HashMap<String, List<String>> collection = new HashMap<String, List<String>>();
 	
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) 
+	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_route_details);
-
 		
-		String routeName = getIntent().getStringExtra("routeName");
-		String routeId = getIntent().getStringExtra("routeId");
-		((TextView)findViewById(R.id.routeDetails_name)).setText("Route: " + routeName);
-		
+		String routeName = getIntent().getStringExtra(Protocols.PARAM_ROUTE_NAME);
+		String routeId = getIntent().getStringExtra(Protocols.PARAM_ROUTE_ID);
+		((TextView)findViewById(R.id.routeDetails_name)).setText(getString(R.string.route) + routeName);
 		
 		createAdapter();
 		getDetails(routeId);
@@ -75,15 +75,33 @@ public class RouteDetailsActivity extends Activity
 		return true;
 	}
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) 
+	{
+		switch (item.getItemId())
+		{
+			case R.id.action_back:
+				setResult(RESULT_OK);
+				finish();
+				return true; 
+	
+			default:
+				return super.onOptionsItemSelected(item);
+			}
+	}
+	
 	class RouteDetailsDao extends AsyncTask<String, Integer, RouteDetailsList>
 	{
 		Context context = null;
 		Gson gson = new Gson();
 		private ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-		private ArrayList<NameValuePair> headers = new ArrayList<NameValuePair>();
 		private final String paramKey = "routeId";
+		final String weekdayStr = "WEEKDAY";
+		final String saturdayStr = "SATURDAY";
+		final String sundayStr = "SUNDAY";
 		
-		public RouteDetailsDao(Context context, String value){
+		public RouteDetailsDao(Context context, String value)
+		{
 			this.context = context;
 			this.params.add(new BasicNameValuePair(paramKey, value));
 		}
@@ -95,8 +113,8 @@ public class RouteDetailsActivity extends Activity
 			progressDialog = new ProgressDialog(RouteDetailsActivity.this);
 			progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			progressDialog.setMax(100);
-			progressDialog.setTitle("Please wait");
-			progressDialog.setMessage("Fetching results");
+			progressDialog.setTitle(getString(R.string.message_please_wait));
+			progressDialog.setMessage(getString(R.string.message_fetching_results));
 			progressDialog.show();
 		}
 		
@@ -123,8 +141,6 @@ public class RouteDetailsActivity extends Activity
 					}
 					
 					String json = dao.getResponse();
-					Log.d("RESULT", json);
-					
 					list = gson.fromJson(json, RouteDetailsList.class);
 
 				} catch (Exception e) {
@@ -138,17 +154,23 @@ public class RouteDetailsActivity extends Activity
 		protected void onPostExecute(RouteDetailsList list) 
 		{
 			progressDialog.dismiss();
-
 			
 			if(list.getRouteList() != null && list.getRouteList().size() == 0){
-				Toast.makeText(getApplicationContext(), "No results found", Toast.LENGTH_LONG).show();
+				Toast.makeText(getApplicationContext(), getString(R.string.message_no_results), Toast.LENGTH_LONG).show();
 				return;
 			}
 			
-			int count = list.getRouteList().size();
+			createCollection(list);
+			customAdapter.notifyDataSetChanged();
+		}
+		
+		private void createCollection(RouteDetailsList list){
 			List<String> weekDays = new ArrayList<String>();
 			List<String> saturday = new ArrayList<String>();
 			List<String> sunday = new ArrayList<String>();
+			
+			int count = list.getRouteList().size();
+	
 			
 			for (int i = 0; i < count; i++) 
 			{
@@ -157,29 +179,27 @@ public class RouteDetailsActivity extends Activity
 				if(!groupList.contains(rt.getCalendar())){
 					groupList.add(rt.getCalendar());
 				}
-				if(rt.getCalendar().equals("WEEKDAY")){
+				if(rt.getCalendar().equals(weekdayStr)){
 					weekDays.add(rt.getTime());
 				}
-				else if(rt.getCalendar().equals("SATURDAY")){
+				else if(rt.getCalendar().equals(saturdayStr)){
 					saturday.add(rt.getTime());
 				}
-				else if(rt.getCalendar().equals("SUNDAY")){
+				else if(rt.getCalendar().equals(sundayStr)){
 					sunday.add(rt.getTime());
 				}
 			}
-
+	
 			for (String groupName : groupList) {
-				if(groupName.equals("WEEKDAY"))
+				if(groupName.equals(weekdayStr))
 					collection.put(groupName, weekDays);
 				else 
-					if(groupName.equals("SATURDAY"))
+					if(groupName.equals(saturdayStr))
 						collection.put(groupName, saturday);
 					else 
-						if(groupName.equals("SUNDAY"))
+						if(groupName.equals(sundayStr))
 							collection.put(groupName, sunday);
 			}	
-			
-			customAdapter.notifyDataSetChanged();
 		}
 	}
 }

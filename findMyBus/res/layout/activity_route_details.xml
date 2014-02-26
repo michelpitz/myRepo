@@ -12,20 +12,31 @@
         android:id="@+id/routeDetails_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/routeDetails_label"
+        android:paddingLeft="10dp"
+        android:textColor="@android:color/darker_gray"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <ExpandableListView
         android:id="@+id/routeDetails_list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/routeDetails_name"
         android:layout_alignParentBottom="true"
-        android:paddingTop="15dp"
-        android:layout_below="@+id/routeDetails_name" >
+        android:layout_below="@+id/routeDetails_name"
+        android:paddingTop="15dp" >
 
     </ExpandableListView>
+
+    <TextView
+        android:id="@+id/routeDetails_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/routeDetails_list"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="@string/route"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </RelativeLayout>
