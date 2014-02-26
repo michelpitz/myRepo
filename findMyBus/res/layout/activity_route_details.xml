@@ -6,29 +6,26 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".MainActivity" >
+    tools:context=".RouteDetailsActivity" >
 
     <TextView
-        android:id="@+id/route_row_id"
+        android:id="@+id/routeDetails_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:text="Small Text"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@android:color/black" />
-
-    <TextView
-        android:id="@+id/route_row_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/route_details_row_id"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/route_row_id"
-        android:paddingLeft="15dp"
-        android:text="street"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@android:color/darker_gray" />
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <ExpandableListView
+        android:id="@+id/routeDetails_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/routeDetails_name"
+        android:layout_alignParentBottom="true"
+        android:paddingTop="15dp"
+        android:layout_below="@+id/routeDetails_name" >
+
+    </ExpandableListView>
 
 </RelativeLayout>

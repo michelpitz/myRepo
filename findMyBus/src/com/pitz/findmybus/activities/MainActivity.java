@@ -1,4 +1,4 @@
-package com.pitz.findmybus;
+package com.pitz.findmybus.activities;
 
 import java.util.ArrayList;
 
@@ -8,6 +8,7 @@ import org.apache.http.message.BasicNameValuePair;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,38 +22,44 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.pitz.findmybus.CustomAdapter;
+import com.pitz.findmybus.R;
+import com.pitz.findmybus.StaticConstants;
 import com.pitz.findmybus.controller.BaseDao;
 import com.pitz.findmybus.model.Route;
 import com.pitz.findmybus.model.RouteList;
 
-public class MainActivity extends Activity {
-
+public class MainActivity extends Activity 
+{
+	final String URL_FIND_ROUTES = "https://dashboard.appglu.com/v1/queries/findRoutesByStopName/run";
+	
 	ListView listView;
 	CustomAdapter customAdapter;
-	ArrayList<Route> routesArray;
+	ArrayList<Route> routesArray = new ArrayList<Route>();
 	ProgressDialog progressDialog;
-	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		routesArray = new ArrayList<Route>();
-		customAdapter = new CustomAdapter(getApplicationContext(), R.layout.route_row, routesArray); //R.layout.item, locationArray);
+		createAdapter();
+		initListeners();
+	}
+	
+	private void createAdapter(){
+		customAdapter = new CustomAdapter(getApplicationContext(), R.layout.route_row, routesArray);
 		
 		listView = (ListView) findViewById(R.id.listViewRoutes);
 		listView.setAdapter(customAdapter);
-		
-		initListeners();
 	}
 	
 	private void initListeners()
 	{
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
-			public void onItemClick(AdapterView<?> arg0, View view, int pos, long arg3) {				
-				getItemDetails(pos);
+			public void onItemClick(AdapterView<?> list, View view, int pos, long arg3) {				
+				getItemDetails(list, pos);
 			}
 		});
 		
@@ -74,22 +81,28 @@ public class MainActivity extends Activity {
 		String streetName = ((EditText) findViewById(R.id.etSearchInput)).getText().toString();
 		
 		if(streetName.length() < 3){
-			Toast.makeText(getApplicationContext(), "Please, type at least 3 letters", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(), getString(R.string.message_type_at_least_three), Toast.LENGTH_SHORT).show();
 			return;
 		}
 		
 		try {
 			RouteDao routeDao = new RouteDao(getApplicationContext(), "%" + streetName + "%");
-			routeDao.execute(StaticConstants.URL_FIND_ROUTES);
+			routeDao.execute(this.URL_FIND_ROUTES);
 		}
 		catch (Exception e) {
-			Log.d("DAO", "Connection error");
+			Log.d("RouteDao", "Connection error");
 		}
 	}
 
-	private void getItemDetails(int position)
+	private void getItemDetails(AdapterView<?> list, int position)
 	{
+		Route selectedRoute = (Route) list.getAdapter().getItem(position);
 		
+		Intent it = new Intent(getApplicationContext(), RouteDetailsActivity.class);
+		it.putExtra("routeName", selectedRoute.getLongName());
+		it.putExtra("routeId", selectedRoute.getId());
+		
+		startActivity(it);
 	}
 	
 	@Override
@@ -102,17 +115,16 @@ public class MainActivity extends Activity {
 	
 	class RouteDao extends AsyncTask<String, Integer, RouteList>
 	{
+		private ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+		private final String paramKey = "stopName";
+
 		Context context = null;
 		Gson gson = new Gson();
-		private ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-		private ArrayList<NameValuePair> headers = new ArrayList<NameValuePair>();
-		private final String attribute = "stopName";
 		
-		public RouteDao(Context context, String value){
+		public RouteDao(Context context, String value)
+		{
 			this.context = context;
-			this.params.add(new BasicNameValuePair(attribute, value));
-			this.headers.add(new BasicNameValuePair("Authorization", "Basic V0tENE43WU1BMXVpTThWOkR0ZFR0ek1MUWxBMGhrMkMxWWk1cEx5VklsQVE2OA== X-AppGlu-Environment: staging"));
-			this.headers.add(new BasicNameValuePair("X-AppGlu-Environment", "staging"));
+			this.params.add(new BasicNameValuePair(paramKey, value));
 		}
 		
 		@Override
@@ -122,8 +134,8 @@ public class MainActivity extends Activity {
 			progressDialog = new ProgressDialog(MainActivity.this);
 			progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			progressDialog.setMax(100);
-			progressDialog.setTitle("Please wait");
-			progressDialog.setMessage("Fecthing results");
+			progressDialog.setTitle(getString(R.string.message_please_wait));
+			progressDialog.setMessage(getString(R.string.message_fetching_results));
 			progressDialog.show();
 			
 			((Button) findViewById(R.id.btSearch)).setEnabled(false);
@@ -141,10 +153,6 @@ public class MainActivity extends Activity {
 				try {
 					BaseDao dao = new BaseDao(urls[i]);
 					
-					for (NameValuePair h : headers) {
-						dao.addHeader(h.getName(), h.getValue());
-					}
-					
 					for (NameValuePair p : params) {
 						dao.addParam(p.getName(), p.getValue());
 					}
@@ -156,8 +164,6 @@ public class MainActivity extends Activity {
 					}
 					
 					String json = dao.getResponse();
-					Log.d("RESULT", json);
-					
 					list = gson.fromJson(json, RouteList.class);
 
 				} catch (Exception e) {
@@ -176,7 +182,7 @@ public class MainActivity extends Activity {
 			Route rt = new Route();
 			
 			if(list.getRouteList() != null && list.getRouteList().size() == 0){
-				Toast.makeText(getApplicationContext(), "No results found", Toast.LENGTH_LONG).show();
+				Toast.makeText(getApplicationContext(), getString(R.string.message_no_results), Toast.LENGTH_LONG).show();
 				return;
 			}
 			
@@ -184,11 +190,9 @@ public class MainActivity extends Activity {
 			{
 				rt = (Route)list.getRouteList().get(i);
 				routesArray.add(rt);
-				Log.d("RESULT", list.getRouteList().get(i).getLongName());
 			}
 			
 			customAdapter.notifyDataSetChanged();
 		}
 	}
-
 }

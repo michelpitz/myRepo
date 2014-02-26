@@ -4,5 +4,12 @@
     <string name="app_name">Find my Bus</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_route_details">Route Details</string>
+    <string name="message_type_at_least_three">Please, type at least 3 letters</string>
+    <string name="message_please_wait">Please wait</string>
+    <string name="message_fetching_results">Fetching results</string>
+    <string name="search">Search</string>
+    <string name="route">Route:</string>
+    <string name="message_no_results">No results found</string>
 
 </resources>

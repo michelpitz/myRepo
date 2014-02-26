@@ -12,7 +12,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
@@ -22,38 +21,34 @@ import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
 import android.util.Log;
 
 public class BaseDao {
 
 	private String url;
 	private ArrayList<NameValuePair> params;
-	private ArrayList<NameValuePair> headers;
 	private String response;
 	private String errorMessage;
 	private int responseCode;
 	
-	private final NameValuePair contentType = new BasicNameValuePair("Content-Type", "application/json");
-
+	final NameValuePair contentType = new BasicNameValuePair("Content-Type", "application/json");
+	final NameValuePair authorization = new BasicNameValuePair("Authorization", "Basic V0tENE43WU1BMXVpTThWOkR0ZFR0ek1MUWxBMGhrMkMxWWk1cEx5VklsQVE2OA== X-AppGlu-Environment: staging");
+	final NameValuePair environment = new BasicNameValuePair("X-AppGlu-Environment", "staging");
+	final String jsonParam = "params";
+	
 	public BaseDao(String url) 
 	{
 		this.url = url;
 		this.params = new ArrayList<NameValuePair>();
-		this.headers = new ArrayList<NameValuePair>();
 	}
 
 	public void executePost() 
 	{
 		HttpPost request = new HttpPost(url);
 
-		for (NameValuePair header : headers) {
-			request.addHeader(header.getName(), header.getValue());
-		}
-
 		request.addHeader(contentType.getName(), contentType.getValue());
+		request.addHeader(authorization.getName(), authorization.getValue());
+		request.addHeader(environment.getName(), environment.getValue());
 		
 		if (!params.isEmpty()) 
 		{
@@ -135,7 +130,7 @@ public class BaseDao {
 				child.put(pair.getName().toString(), pair.getValue().toString());
 			}
 			
-			jSonObj.put("params", child);
+			jSonObj.put(jsonParam, child);
 			
 		} catch (JSONException e1) {
 			e1.printStackTrace();
@@ -146,10 +141,6 @@ public class BaseDao {
 	
 	public void addParam(String name, String value) {
 		this.params.add(new BasicNameValuePair(name, value));
-	}
-
-	public void addHeader(String name, String value) {
-		this.headers.add(new BasicNameValuePair(name, value));
 	}
 
 	public int getReponseCode() {

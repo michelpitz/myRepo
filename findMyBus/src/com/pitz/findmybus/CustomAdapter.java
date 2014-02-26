@@ -1,17 +1,15 @@
 package com.pitz.findmybus;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import com.pitz.findmybus.model.Route;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import com.pitz.findmybus.model.Route;
 
 public class CustomAdapter extends ArrayAdapter {
 
@@ -39,8 +37,8 @@ public class CustomAdapter extends ArrayAdapter {
 			view = inflater.inflate(R.layout.route_row, viewGroup, false);
 
 			viewHolder = new Holder();
-			viewHolder.id = (TextView) view.findViewById(R.id.route_id);
-			viewHolder.text = (TextView) view.findViewById(R.id.route_name);
+			viewHolder.id = (TextView) view.findViewById(R.id.route_row_id);
+			viewHolder.text = (TextView) view.findViewById(R.id.route_row_name);
 
 			view.setTag(viewHolder);
 		} else {
@@ -48,7 +46,7 @@ public class CustomAdapter extends ArrayAdapter {
 		}
 
 		Route route = (Route)getItem(pos);
-		viewHolder.id.setText(route.getShortName() + ".");
+		viewHolder.id.setText(route.getShortName() + ". ");
 		viewHolder.text.setText(route.getLongName());
 
 		return view;
