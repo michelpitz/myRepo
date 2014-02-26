@@ -45,7 +45,7 @@ public class RouteDetailsActivity extends Activity
 		
 		String routeName = getIntent().getStringExtra(Protocols.PARAM_ROUTE_NAME);
 		String routeId = getIntent().getStringExtra(Protocols.PARAM_ROUTE_ID);
-		((TextView)findViewById(R.id.routeDetails_name)).setText(getString(R.string.route) + routeName);
+		((TextView)findViewById(R.id.routeDetails_name)).setText(routeName);
 		
 		createAdapter();
 		getDetails(routeId);

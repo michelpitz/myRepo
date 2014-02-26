@@ -24,8 +24,7 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int action_back=0x7f08000c;
-        public static final int action_settings=0x7f08000b;
+        public static final int action_back=0x7f08000b;
         public static final int btSearch=0x7f080002;
         public static final int details_row_group_name=0x7f080006;
         public static final int details_row_name=0x7f080007;

@@ -10,6 +10,8 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.pitz.findmybus.R;
+import com.pitz.findmybus.R.id;
+import com.pitz.findmybus.R.layout;
 import com.pitz.findmybus.model.Route;
 
 public class CustomAdapter extends ArrayAdapter<Object> {
