@@ -77,6 +77,7 @@ public class MainActivity extends Activity
 	private void executeSearch(View v)
 	{
 		routesArray.clear();
+		customAdapter.notifyDataSetChanged();
 		
 		String streetName = ((EditText) findViewById(R.id.etSearchInput)).getText().toString();
 		
@@ -179,13 +180,12 @@ public class MainActivity extends Activity
 			progressDialog.dismiss();
 			((Button) findViewById(R.id.btSearch)).setEnabled(true);
 			
-			Route rt = new Route();
-			
-			if(list.getRouteList() != null && list.getRouteList().size() == 0){
+			if(list == null || (list.getRouteList() != null && list.getRouteList().size() == 0)){
 				Toast.makeText(getApplicationContext(), getString(R.string.message_no_results), Toast.LENGTH_LONG).show();
 				return;
 			}
 			
+			Route rt = new Route();
 			for (int i = 0; i < list.getRouteList().size(); i++) 
 			{
 				rt = (Route)list.getRouteList().get(i);

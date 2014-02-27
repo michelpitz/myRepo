@@ -43,6 +43,8 @@ public class RouteDetailsActivity extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_route_details);
 		
+		setTitle(getString(R.string.app_name) + " > " + getString(R.string.title_activity_route_details));
+		
 		String routeName = getIntent().getStringExtra(Protocols.PARAM_ROUTE_NAME);
 		String routeId = getIntent().getStringExtra(Protocols.PARAM_ROUTE_ID);
 		((TextView)findViewById(R.id.routeDetails_name)).setText(routeName);
